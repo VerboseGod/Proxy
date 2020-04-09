@@ -1,7 +1,10 @@
 HTTP and HTTPS Proxy
 ====
 
-Simple http proxy made for final school project.
+Prerequisite
+------------
+
+This project was made as a final school project. The project was written in 2018 as a "HTTP and HTTPS proxy with features".
 
 Includes GUI, logging, blacklisting and HTTP site modification.
 
