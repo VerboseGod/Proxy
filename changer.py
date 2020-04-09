@@ -1,11 +1,13 @@
+import gzip
 import logging
 from html.parser import HTMLParser
-import gzip
+
 
 class Changer:
     """
     Changer class changes HTML text and modifies it.
     """
+
     def __init__(self, http_text, **kwargs):
         self.http_text = http_text  # Entire Message
         self.html_text = None  # Only HTML Part

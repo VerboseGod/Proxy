@@ -1,14 +1,15 @@
+import asyncio
+import functools
+import logging
+import os
+import random
+import re
+from csv import DictReader
 from socket import TCP_NODELAY
 from time import time
 from traceback import print_exc
-import asyncio
-import logging
-import random
-import functools
-import re
-import os
+
 import changer
-from csv import DictReader
 
 REGEX_HOST = re.compile(r'(.+?):([0-9]{1,5})')
 REGEX_CONTENT_LENGTH = re.compile(r'\r\nContent-Length: ([0-9]+)\r\n', re.IGNORECASE)
@@ -28,6 +29,8 @@ verbose = 0  # Debugging variable
 special_sites = None
 banned_port = None
 verbose_option = None  # Global variable
+
+
 # so that when the proxy checks for updates it will have something to compare with
 
 
@@ -136,7 +139,7 @@ async def process_warp(client_reader, client_writer, *, loop=None):
                 if len(header) == 0 and recvRetry < RECV_MAX_RETRY:
                     # handle the case when the client make connection but sending data is delayed for some reasons
                     recvRetry += 1
-                    await asyncio.sleep(0.2, loop=loop)  #delay
+                    await asyncio.sleep(0.2, loop=loop)  # delay
                     continue
                 else:
                     break
@@ -163,10 +166,10 @@ async def process_warp(client_reader, client_writer, *, loop=None):
         logger.debug('[%s] !!! Task reject (invalid request)' % ident)  # Add to Log
         return
     head = req[0].split(' ')
-    if head[0] == 'CONNECT': # https proxy
+    if head[0] == 'CONNECT':  # https proxy
         try:
             logger.info('%sBYPASSING <%s %s> (SSL connection)' %
-                ('[%s] ' % ident if verbose >= 1 else '', head[0], head[1]))
+                        ('[%s] ' % ident if verbose >= 1 else '', head[0], head[1]))
 
             m = REGEX_HOST.search(head[1])
             host = m.group(1)
@@ -204,7 +207,7 @@ async def process_warp(client_reader, client_writer, *, loop=None):
     sreq = []  # https request
     sreqHeaderEndIndex = 0  # https end of header index
 
-    for line in req[1:]: # for every line in the request
+    for line in req[1:]:  # for every line in the request
         headerNameAndValue = line.split(': ', 1)
         if len(headerNameAndValue) == 2:
             headerName, headerValue = headerNameAndValue
@@ -232,7 +235,7 @@ async def process_warp(client_reader, client_writer, *, loop=None):
 
     if not phost:
         phost = '127.0.0.1'
-    path = head[1][len(phost)+7:]
+    path = head[1][len(phost) + 7:]
 
     logger.info('%sWARPING <%s %s>' % ('[%s] ' % ident if verbose >= 1 else '', head[0], head[1]))
 
@@ -256,9 +259,11 @@ async def process_warp(client_reader, client_writer, *, loop=None):
             def generate_dummyheaders():
                 def generate_rndstrs(strings, length):
                     return ''.join(random.choice(strings) for _ in range(length))
+
                 import string
                 return ['X-%s: %s\r\n' % (generate_rndstrs(string.ascii_uppercase, 16),
-                    generate_rndstrs(string.ascii_letters + string.digits, 128)) for _ in range(32)]
+                                          generate_rndstrs(string.ascii_letters + string.digits, 128)) for _ in
+                        range(32)]
 
             req_writer.writelines(list(map(lambda x: x.encode(), generate_dummyheaders())))
             await req_writer.drain()
@@ -272,6 +277,7 @@ async def process_warp(client_reader, client_writer, *, loop=None):
                     yield random.randrange(2, 4), phost[:i]
                     phost = phost[i:]
                     i = random.randrange(2, 5)
+
             for delay, c in feed_phost(phost):
                 await asyncio.sleep(delay / 10.0, loop=loop)
                 req_writer.write(c.encode())

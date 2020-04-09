@@ -1,14 +1,15 @@
-import tkinter
-import proxy
-import threading
 import asyncio
-import os
-from tkinter import scrolledtext
 import logging
+import os
+import threading
+import tkinter
+from tkinter import scrolledtext
+
+import proxy
 
 
 class ProxyThread(threading.Thread):
-    def __init__(self, loop, verbose,  port,  ip, banned_port, special=None):
+    def __init__(self, loop, verbose, port, ip, banned_port, special=None):
         super().__init__()
         self.setName("proxy_thread")
         self.setDaemon(True)
