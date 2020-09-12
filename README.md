@@ -34,7 +34,7 @@ This may not work with:
    * some ISPs
    * some company firewalls
    * some school firewalls
-   * some browers (will be fixed later)
+   * some browsers
 
 Special thanks to
 -----------------
